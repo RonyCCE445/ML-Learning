@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Iris Classifier</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Iris Classifier</h1>
+    <form id="iris-form">
+      <label>Sepal Length:
+        <input type="number" step="0.1" id="sepal_length" required>
+      </label>
+      <label>Sepal Width:
+        <input type="number" step="0.1" id="sepal_width" required>
+      </label>
+      <label>Petal Length:
+        <input type="number" step="0.1" id="petal_length" required>
+      </label>
+      <label>Petal Width:
+        <input type="number" step="0.1" id="petal_width" required>
+      </label>
+      <button type="submit">Predict</button>
+    </form>
+    <h3 id="result"></h3>
+  </div>
+
+  <script>
+    document.getElementById('iris-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        sepal_length: parseFloat(document.getElementById('sepal_length').value),
+        sepal_width: parseFloat(document.getElementById('sepal_width').value),
+        petal_length: parseFloat(document.getElementById('petal_length').value),
+        petal_width: parseFloat(document.getElementById('petal_width').value)
+      };
+
+      try {
+        const response = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) throw new Error('Prediction failed');
+
+        const result = await response.json();
+        document.getElementById('result').innerText = `Predicted Species: ${result.prediction}`;
+      } catch (err) {
+        document.getElementById('result').innerText = 'Error: Could not get prediction.';
+      }
+    });
+  </script>
+</body>
+</html>
